@@ -1,0 +1,20 @@
+C4Container
+title API-Ongs - Containers
+
+System_Ext(frontend, "Frontend React", "Interface web que consome a API REST")
+
+System_Boundary(api_boundary, "API Node.js") {
+  Container(api_server, "Servidor Express", "Node.js + Express", "Recebe requisições HTTP e gerencia rotas")
+  Container(auth_middleware, "Middleware de Autenticação", "JWT", "Autentica e autoriza acessos via token JWT")
+  Container(knex_db, "Banco de Dados SQLite", "Knex.js", "Armazena dados das ONGs e incidentes")
+}
+
+Rel(frontend, api_server, "Faz requisições HTTP REST")
+Rel(api_server, auth_middleware, "Valida tokens JWT")
+Rel(api_server, knex_db, "CRUD em banco via Knex")
+
+
+
+
+
+

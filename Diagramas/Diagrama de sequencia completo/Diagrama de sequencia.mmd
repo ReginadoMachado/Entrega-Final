@@ -1,0 +1,71 @@
+@startuml
+title Diagrama de Sequência - Funcionalidades Completas da API
+
+actor ONG
+boundary Frontend
+control API_Server
+control AuthMiddleware
+control SessionController
+control OngController
+control IncidentController
+control ProfileController
+database Database
+
+== Login ==
+ONG -> Frontend : Insere ID e envia
+Frontend -> API_Server : POST /sessions
+API_Server -> SessionController : autenticar(id)
+SessionController -> Database : SELECT * FROM ongs WHERE id = ?
+Database --> SessionController : dados da ONG
+SessionController -> API_Server : 200 OK + ONG
+API_Server -> Frontend : Retorna ONG (autenticada)
+
+== Criar ONG ==
+ONG -> Frontend : Preenche dados e envia
+Frontend -> API_Server : POST /ongs
+API_Server -> OngController : criarOng(dados)
+OngController -> Database : INSERT INTO ongs (...)
+Database --> OngController : ONG criada
+OngController -> API_Server : 201 Created + id
+API_Server -> Frontend : ONG criada com sucesso
+
+== Criar Incidente ==
+ONG -> Frontend : Preenche dados e envia
+Frontend -> API_Server : POST /incidents (com token)
+API_Server -> AuthMiddleware : validarToken(token)
+AuthMiddleware -> Database : SELECT * FROM ongs WHERE token = ?
+Database --> AuthMiddleware : dados da ONG
+AuthMiddleware -> API_Server : ONG autenticada
+API_Server -> IncidentController : criarIncidente(dados, ong_id)
+IncidentController -> Database : INSERT INTO incidents (...)
+Database --> IncidentController : incidente criado
+IncidentController -> API_Server : 201 Created
+API_Server -> Frontend : incidente criado com sucesso
+
+== Listar Incidentes da ONG ==
+ONG -> Frontend : Clica em "Meus Incidentes"
+Frontend -> API_Server : GET /profile (com token)
+API_Server -> AuthMiddleware : validarToken(token)
+AuthMiddleware -> Database : SELECT * FROM ongs WHERE token = ?
+Database --> AuthMiddleware : dados da ONG
+AuthMiddleware -> API_Server : ONG autenticada
+API_Server -> ProfileController : listar(ong_id)
+ProfileController -> Database : SELECT * FROM incidents WHERE ong_id = ?
+Database --> ProfileController : lista de incidentes
+ProfileController -> API_Server : lista de incidentes
+API_Server -> Frontend : 200 OK + JSON
+
+== Excluir Incidente ==
+ONG -> Frontend : Clica em excluir incidente
+Frontend -> API_Server : DELETE /incidents/:id (com token)
+API_Server -> AuthMiddleware : validarToken(token)
+AuthMiddleware -> Database : SELECT * FROM ongs WHERE token = ?
+Database --> AuthMiddleware : dados da ONG
+AuthMiddleware -> API_Server : ONG autenticada
+API_Server -> IncidentController : deletarIncidente(id, ong_id)
+IncidentController -> Database : DELETE FROM incidents WHERE id = ? AND ong_id = ?
+Database --> IncidentController : sucesso
+IncidentController -> API_Server : 204 No Content
+API_Server -> Frontend : Incidente excluído
+
+@enduml

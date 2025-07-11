@@ -1,0 +1,12 @@
+C4Context
+title API-Ongs - Contexto
+
+System_Ext(frontend, "Frontend React", "Interface web usada pelas ONGs para interagir com a API")
+
+System_Boundary(api, "API de Incidentes") {
+  System(api_backend, "Backend Node.js", "Gerencia ONGs e Incidentes")
+  System(db, "Banco de Dados SQLite", "Armazena dados das ONGs e incidentes")
+}
+
+Rel(frontend, api_backend, "Faz requisições HTTP (JSON)")
+Rel(api_backend, db, "Executa queries SQL via Knex")

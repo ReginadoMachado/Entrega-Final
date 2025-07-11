@@ -1,0 +1,27 @@
+C4Component
+title API-Ongs - Componentes
+
+System_Ext(frontend, "Frontend React", "Interface Web que consome a API REST")
+
+System_Boundary(api_boundary, "API Node.js") {
+  Container(api, "Servidor Express Node.js", "Backend API REST", "Responsável por receber e processar requisições HTTP")
+  Component(Router, "Rotas Express", "Gerencia as rotas HTTP e direciona requisições para os controladores")
+  Component(OngController, "OngController", "Gerencia criação e listagem de ONGs")
+  Component(AuthController, "AuthController", "Autentica ONGs e gera tokens JWT")
+  Component(IncidentController, "IncidentController", "Gerencia CRUD de incidentes")
+  Component(AuthMiddleware, "JWT Middleware", "Valida tokens JWT e injeta ONG no request")
+  Component(Database, "Conexão com SQLite (Knex)", "Executa comandos SQL no banco SQLite")
+}
+
+Rel(frontend, api, "Faz requisições HTTP (JSON)")
+Rel(api, Router, "Usa")
+Rel(Router, OngController, "Chama")
+Rel(Router, AuthController, "Chama")
+Rel(Router, IncidentController, "Chama")
+Rel(Router, AuthMiddleware, "Protege rotas com")
+Rel(OngController, Database, "Acessa")
+Rel(AuthController, Database, "Valida login")
+Rel(IncidentController, Database, "Acessa")
+Rel(AuthMiddleware, Database, "Valida token JWT")
+
+
